@@ -7,7 +7,9 @@
         Loading...
       </div>
       <div v-else>
-        Api Result : {{apiRes}}
+        <div v-for="b in boards" :key="b.id">
+          {{b}}
+        </div>
       </div>
       <ul>
         <li>
@@ -22,11 +24,14 @@
 </template>
 
 <script>
+import {board} from '../api'
+
 export default {
   data() {
     return {
       loading: false,
-      apiRes: ''
+      boards: [],
+      error: ''
     }
   },
   created() {
@@ -35,18 +40,13 @@ export default {
   methods: {
     fetchData() {
       this.loading = true
-
-      const req = new XMLHttpRequest()
-      req.open('GET', 'http://localhost:3000/health')
-      req.send()
-      req.addEventListener('load', () => {
-        this.loading = false
-        this.apiRes = {
-          status: req.status,
-          statusText: req.statusText,
-          response: JSON.parse(req.response)
-        }
-      })
+      board.fetch()
+        .then(data => {
+          this.boards = data
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   },
 }
