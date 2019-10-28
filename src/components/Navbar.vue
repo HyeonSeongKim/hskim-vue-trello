@@ -11,19 +11,36 @@
 </template>
 
 <script>
-import {setAuthInHeader} from '../api'
+import {mapState, mapGetters, mapMutations} from 'vuex'
 
 export default {
   computed: {
-    isAuth() {
-      return !!localStorage.getItem('token')
-    }
+    ...mapState({
+      navbarColor: 'navbarColor',
+      bodyColor: 'bodyColor'
+    }),
+    ...mapGetters([
+      'isAuth'
+    ])
+  },
+  watch: {
+    'bodyColor': 'updateTheme'
+  },
+  mounted() {
+    this.updateTheme()
   },
   methods: {
+    ...mapMutations([
+      'LOGOUT'
+    ]),
     logout() {
-      delete localStorage.token
-      setAuthInHeader(null)
+      this.LOGOUT()
       this.$router.push('/login')
+    },
+    updateTheme() {
+      this.$el.style.backgroundColor = this.navbarColor
+      const container = document.querySelector('.container')
+      if (container) container.style.backgroundColor = this.bodyColor
     }
   },
 }
